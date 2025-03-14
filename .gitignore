@@ -283,5 +283,5 @@ gradle-app.setting
 front-end/static/**
 
 
-!/dev/all/java.java
-!/dev/all/**
+
+java.java
