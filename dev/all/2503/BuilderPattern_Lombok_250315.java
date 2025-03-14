@@ -11,7 +11,7 @@ class Product {
 
 public class LombokBuilderExample {
     public static void main(String[] args) {
-        Product product = Product.builder()
+        Product product = Product.builder() 
                 .name("Smartphone")
                 .price(1200)
                 .category("Electronics")
