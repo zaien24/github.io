@@ -1,11 +1,20 @@
-class DeepPrototype implements Clneable {
+import lombok.Buidler;
+import lombok.ToString;
+
+@Buidler
+@ToString
+class Product {
     private String name;
-    private NestedObject nestedObject;
+    private int price;
+    private String category;
+}
 
-    public DeepPrototype(String name, String nestedData) {
-        this.name = name;
-        this.nestedObject = new NestedObject(nestedObject);
+public class LombokBuilderExample {
+    public static void main(String[] args) {
+        Product product = Product.builder()
+                .name("Smartphone")
+                .price(1200)
+                .category("Electronics")
+                .build();
     }
-
-    @Override
 }
