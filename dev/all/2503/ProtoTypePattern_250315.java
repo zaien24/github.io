@@ -13,7 +13,7 @@ class Warrior implements GameCharacter {
     private String name;
     private int power;
 
-    pulbic Warrior(String name, int power) {
+    public Warrior(String name, int power) {
         this.name = name;
         this.power = power;
     }
