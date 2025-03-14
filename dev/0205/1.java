@@ -1,65 +1,148 @@
-import java.util.HashMap;
-import java.util.Map;
+// Builder pattern
+// Product 클래스 ( 빌더 패턴 적용)
+class Product {
+    private final String name;
+    private final int price;
+    private final String category;
 
-// Prototype 인터페이스
-// 데이터베이스 쿼리 결과 캐싱
-//🗃️ 사용 이유
-//데이터베이스에서 동일한 쿼리를 반복 실행하면 성능 저하가 발생할 수 있음.
-//Prototype 패턴을 사용하면 쿼리 결과를 캐싱하여 객체를 복제할 수 있음
-interface QueryResult extends Cloneable {
-    QueryResult clone();
-}
+    // private 생성자 (Builder 내부에서만 생성 가능)
+    private Product(Builder builder) {
+        this.name = builder.name;
+        this.price = builder.price;
+        this.category = builder.category;
+    }
 
-// 데이터베이스 쿼리 결과 저장
-class UserData implements QueryResult {
-    private String username;
-    private String email;
+    // Builder 클래스 정의
+    public static class Builder {
+        private String name;
+        private int price;
+        private String category;
 
-    public UserData(String username, String email) {
-        this.username = username;
-        this.email = email;
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setPrice(int price) {
+            this.price = price;
+            return this;
+        }
+
+        public Builder setCategory(String category) {
+            this.category = category;
+            return this;
+        }
+
+        public Product build() {
+            return new Product(this);
+        }
     }
 
     @Override
-    public QueryResult clone() {
-        return new UserData(this.username, this.email);
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
+    public String toString() {
+        return "Product{name='" + name + "', price=" + price + ", category='" + category + "'}";
     }
 }
 
-// 캐싱 시스템
-class QueryCache {
-    private Map<String, QueryResult> cache = new HashMap<>();
+// 빌더 패턴 사용
+public class BuilderPatternExample {
+    public static void main(String[] args) {
+        Product product = new Product.Builder()
+                .setName("Laptop")
+                .setPrice(1500)
+                .setCategory("Electronics")
+                .build();
+    }
+}
 
-    public void storeQueryResult(String key, QueryResult result) {
-        cache.put(key, result);
+/////////////
+import lombok.Buidler;
+import lombok.ToString;
+
+@Buidler
+@ToString
+class Product {
+    private String name;
+    private int price;
+    private String category;
+}
+
+public class LombokBuilderExample {
+    public static void main(String[] args) {
+        Product product = Product.builder()
+                .name("Smartphone")
+                .price(1200)
+                .category("Electronics")
+                .build();
+    }
+}
+
+//////
+// Prototype 인터페이스
+// 게임 캐릭터(게임 개발)
+// 사용 이유
+// 게임에서는 비슷한 능력을 가진 캐릭터나 몬스터를 빠르게 생성해야 하는 경우가 많음.
+// 객체를 새로 생성하는 것보다 기존 캐릭터를 복제하는 것이 성능상 유리함.
+// 동일한 능력을 가진 캐릭터를 여러 개 만들 때 유용함.
+interface GameCharacter extends Cloneable {
+    GameCharacter clone();
+}
+
+// Concreate Prototype (캐릭터)
+class Warrior implements GameCharacter {
+    private String name;
+    private int power;
+
+    public Warrior(String name, int power) {
+        this.name = name;
+        this.power = power;
     }
 
-    public QueryResult getQueryResult(String key) {
-        return cache.get(key).clone();
+    @Override
+    public GameCharacter clone() {
+        return new Warrior(this.name, this.power);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPower() {
+        return power;
+    }
+}
+
+// 캐릭터 관리 클래스 (PrototypeRegistry)
+class CharacterRegistry {
+    private Map<String, GameCharacter> characters = new HashMap<>();
+
+    public void addCharacter(String key, GameCharacter character) {
+        characters.put(key, character);
+    }
+
+    public GameCharacter getCharacter(String key) {
+        return characters.get(key).clone();
     }
 }
 
 // 클라이언트 코드
-public class DatabasePrototypeExample {
+public class GamePrototypeExample {
     public static void main(String[] args) {
-        QueryCache cache = new QueryCache();
+        // 캐릭터 등록
+        CharacterRegistry registry = new CharacterRegistry();
+        registry.addCharacter("Warrior", new Warrior("Knight", 100));
 
-        // 쿼리 결과를 캐싱
-        cache.storeQueryResult("user_123", new UserData("Alice", "alice@example.com"));
+        // 기존 캐릭터 복제
+        Warrior clonedWarrior = (Warrior) registry.getCharacter("Warrior");
+        clonedWarrior.setName("Dark Knight");
 
-        // 캐싱된 데이터 복제
-        UserData clonedUser = (UserData) cache.getQueryResult("user_123");
-
-        System.out.println("Original: " + ((UserData) cache.getQueryResult("user_123")).getUsername());
-        System.out.println("Cloned: " + clonedUser.getUsername());
+        System.out.println("Original: " + registry.getCharacter("Warrior").getName());
+        System.out.println("Cloned: " + clonedWarrior.getName());
     }
 }
-//✅ 이점: 동일한 데이터베이스 요청을 줄이고, 캐싱된 결과를 복제하여 성능 최적화 가능.
+
+//✅ 이점: 새로운 캐릭터를 추가할 때 new 키워드를 사용하지 않고 복제하여 성능을 최적화할 수 있음.
