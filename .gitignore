@@ -284,3 +284,4 @@ front-end/static/**
 
 
 !/dev/all/java.java
+!/dev/all/**
