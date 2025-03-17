@@ -1,3 +1,4 @@
+
 // 1. Target 인터페이스 (클라이언트가 기대하는 인터페이스)
 interface Target {
     void request();
